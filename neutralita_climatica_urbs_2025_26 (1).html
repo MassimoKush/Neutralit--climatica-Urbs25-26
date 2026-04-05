@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="slides-format" content="viewport">
+    <title>Neutralità Climatica — Urbs 2025/26</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@300..700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+        @theme {
+            --color-bg: #0D1B0E;
+            --color-bg-deep: #081009;
+            --color-surface: #132415;
+            --color-text: #ecfdf5;
+            --color-text-secondary: #d1fae5;
+            --color-text-muted: #86efac;
+            --color-accent-1: #22C55E;
+            --color-accent-2: #bbf7d0;
+            --color-accent-3: #A3B18A;
+            --color-glass-bg: rgba(255,255,255,0.04);
+            --color-glass-border: rgba(255,255,255,0.08);
+            --color-vignette: rgba(0,0,0,0.45);
+            --font-display: 'Inter', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
+        }
+    </style>
+    <style>
+        :root { --color-bg: #0D1B0E; --color-text: #ecfdf5; --glow-color-rgb: 34,197,94; }
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body { background: var(--color-bg); margin: 0; }
+        body { font-family: var(--font-body); color: var(--color-text); overflow: hidden; height: 100vh; width: 100vw; }
+        .deck { width: 100vw; height: 100vh; position: relative; }
+        .slide { position: absolute; inset: 0; background: var(--color-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transform: scale(0.95); transition: opacity 0.7s ease, transform 0.7s ease; pointer-events: none; overflow: hidden; }
+        .slide.active { opacity: 1; transform: scale(1); pointer-events: all; }
+        .slide > .content { position: relative; z-index: 2; width: 100%; max-width: 1180px; padding: clamp(1.5rem, 4vw, 4rem); }
+        .nav-controls { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 16px; z-index: 100; background: var(--color-glass-bg); backdrop-filter: blur(10px); padding: 10px 24px; border-radius: 40px; border: 1px solid var(--color-glass-border); }
+        .nav-btn { width: 40px; height: 40px; border: none; background: var(--color-glass-bg); color: var(--color-accent-1); border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .slide-dots { display: flex; gap: 8px; }
+        .slide-dots .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--color-glass-border); cursor: pointer; transition: background 0.3s, transform 0.3s; }
+        .slide-dots .dot.active { background: var(--color-accent-1); transform: scale(1.3); }
+        .slide-counter { font-size: 0.8rem; color: var(--color-text-muted); min-width: 40px; text-align: center; }
+        .reveal { opacity: 0; transform: translateY(20px); }
+        @keyframes float-slow { 0%{transform:translate(0,0) scale(1);} 25%{transform:translate(60px,-50px) scale(1.12);} 50%{transform:translate(-40px,40px) scale(0.9);} 75%{transform:translate(50px,20px) scale(1.08);} 100%{transform:translate(0,0) scale(1);} }
+        @keyframes float-drift { 0%{transform:translate(0,0) scale(1) rotate(0deg);} 33%{transform:translate(-50px,-60px) scale(1.15) rotate(3deg);} 66%{transform:translate(40px,30px) scale(0.88) rotate(-2deg);} 100%{transform:translate(0,0) scale(1) rotate(0deg);} }
+        @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-15px);} }
+        .gradient-mesh { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(80px); animation: float-slow 10s ease-in-out infinite; }
+        .blob:nth-child(2) { animation: float-drift 14s ease-in-out infinite; }
+        .blob:nth-child(3) { animation: float-slow 18s ease-in-out infinite reverse; }
+        .slide::before { content:''; position:absolute; inset:0; z-index:1; pointer-events:none; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); background-repeat:repeat; background-size:256px 256px; opacity:0.03; mix-blend-mode:overlay; }
+        .slide::after { content:''; position:absolute; inset:0; z-index:1; pointer-events:none; background:radial-gradient(ellipse at center, transparent 50%, var(--color-vignette) 100%); }
+        .text-glow { text-shadow: 0 0 20px rgba(var(--glow-color-rgb),0.5), 0 0 40px rgba(var(--glow-color-rgb),0.2); }
+        .stat-glow { text-shadow: 0 0 30px rgba(var(--glow-color-rgb),0.6), 0 0 60px rgba(var(--glow-color-rgb),0.25); }
+        @keyframes glow-pulse { 0%,100%{text-shadow:0 0 20px rgba(var(--glow-color-rgb),0.5),0 0 40px rgba(var(--glow-color-rgb),0.2);} 50%{text-shadow:0 0 30px rgba(var(--glow-color-rgb),0.8),0 0 60px rgba(var(--glow-color-rgb),0.3);} }
+        .glow-pulse { animation: glow-pulse 3s ease-in-out infinite; }
+        .bar-fill { height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--color-accent-1), var(--color-accent-2)); transition: width 0.8s ease; width: 0%; }
+        .bar-track { background: var(--color-glass-bg); border: 1px solid var(--color-glass-border); border-radius: 6px; height: 28px; overflow: hidden; }
+        .mini-line { height: 4px; border-radius: 999px; background: linear-gradient(90deg, var(--color-accent-1), var(--color-accent-2)); margin-top: 10px; }
+    </style>
+</head>
+<body>
+<div class="mouse-spotlight" style="position:fixed;inset:0;z-index:99;pointer-events:none;"></div>
+<div class="deck">
+
+<div class="slide slide-1 active" data-slide="1">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:500px;height:500px;top:-100px;right:-100px;background:var(--color-accent-1);opacity:0.15;"></div>
+        <div class="blob" style="width:300px;height:300px;bottom:-80px;left:-60px;background:var(--color-accent-3);opacity:0.12;"></div>
+        <div class="blob" style="width:220px;height:220px;top:42%;left:16%;background:var(--color-accent-2);opacity:0.09;"></div>
+    </div>
+    <canvas class="particle-canvas" style="position:absolute;inset:0;z-index:1;"></canvas>
+    <div class="content text-center">
+        <div class="text-[98px] mb-4 animate-[float_3s_ease-in-out_infinite]" style="filter:drop-shadow(0 0 30px rgba(34,197,94,0.4))">🌍</div>
+        <h1 class="font-display text-[clamp(2.6rem,5.6vw,4.6rem)] font-extrabold bg-linear-to-br from-accent-1 via-accent-2 to-accent-1 bg-clip-text text-transparent tracking-tight mb-3 reveal">Neutralità climatica</h1>
+        <p class="text-[clamp(0.85rem,1.3vw,1.1rem)] font-medium text-text-muted tracking-[5px] uppercase reveal">Urbs 2025/26 · Massimo Kushnaryov · Stefano Pisati</p>
+        <p class="max-w-[820px] mx-auto text-text-secondary text-base mt-5 leading-relaxed reveal">Un percorso tra definizione, riferimenti internazionali, obiettivi europei, settori di intervento e implicazioni territoriali della transizione verso emissioni nette pari a zero.</p>
+    </div>
+</div>
+
+<div class="slide slide-2" data-slide="2">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:360px;height:360px;top:-70px;right:-60px;background:var(--color-accent-1);opacity:0.08;"></div>
+        <div class="blob" style="width:260px;height:260px;bottom:-60px;left:-40px;background:var(--color-accent-3);opacity:0.06;"></div>
+    </div>
+    <div class="content">
+        <p class="uppercase tracking-[0.12em] text-accent-1 text-sm font-semibold mb-3 reveal">Quadro concettuale</p>
+        <h2 class="font-display text-[clamp(1.9rem,3.8vw,2.9rem)] font-bold mb-6 reveal">Che cos'è la neutralità climatica</h2>
+        <div class="grid grid-cols-2 gap-6">
+            <div class="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-xl p-6 reveal">
+                <h3 class="font-semibold text-accent-2 mb-2">Definizione operativa</h3>
+                <p class="text-sm text-text-secondary leading-relaxed">Si raggiunge quando le emissioni antropiche residue di gas serra sono ridotte al massimo e bilanciate da assorbimenti equivalenti, naturali o tecnologici. Non implica assenza totale di emissioni, ma un saldo netto nullo sul sistema climatico.</p>
+            </div>
+            <div class="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-xl p-6 reveal">
+                <h3 class="font-semibold text-accent-2 mb-2">Oltre il solo carbonio</h3>
+                <p class="text-sm text-text-secondary leading-relaxed">Il concetto non riguarda soltanto la CO₂: comprende metano, protossido di azoto, gas fluorurati ed effetti locali come albedo, uso del suolo e microclima urbano, tutti elementi rilevanti nel bilancio climatico complessivo.</p>
+            </div>
+            <div class="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-xl p-6 reveal">
+                <h3 class="font-semibold text-accent-2 mb-2">Perché è centrale</h3>
+                <p class="text-sm text-text-secondary leading-relaxed">La neutralità climatica è il traguardo di lungo periodo necessario per stabilizzare le concentrazioni di gas serra e rendere coerenti le politiche climatiche con i limiti di temperatura fissati a livello internazionale.</p>
+            </div>
+            <div class="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-xl p-6 reveal">
+                <h3 class="font-semibold text-accent-2 mb-2">Lettura territoriale</h3>
+                <p class="text-sm text-text-secondary leading-relaxed">Per un progetto universitario in ambito urbano è utile leggerla come obiettivo integrato: energia, mobilità, edilizia, spazi aperti, foreste urbane e capacità di adattamento devono essere pensati insieme.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide slide-3" data-slide="3">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:390px;height:390px;top:-80px;left:-50px;background:var(--color-accent-1);opacity:0.09;"></div>
+        <div class="blob" style="width:220px;height:220px;bottom:-40px;right:-40px;background:var(--color-accent-2);opacity:0.07;"></div>
+    </div>
+    <canvas class="particle-canvas-ambient" style="position:absolute;inset:0;z-index:1;"></canvas>
+    <div class="content">
+        <p class="uppercase tracking-[0.12em] text-accent-1 text-sm font-semibold mb-3 reveal">Accordo di Parigi I</p>
+        <h2 class="font-display text-[clamp(1.9rem,3.8vw,2.9rem)] font-bold mb-6 reveal">Origine, obiettivi e struttura dell'accordo</h2>
+        <div class="grid grid-cols-3 gap-5 mb-6">
+            <div class="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-xl p-5 reveal"><div class="text-2xl mb-2">📅</div><h3 class="font-semibold text-accent-2 text-sm mb-1">2015</h3><p class="text-xs text-text-secondary leading-relaxed">Adottato alla COP21 di Parigi da 195 Paesi come primo quadro universale sul clima.</p></div>
+            <div class="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-xl p-5 reveal"><div class="text-2xl mb-2">🌡️</div><h3 class="font-semibold text-accent-2 text-sm mb-1">Temperatura</h3><p class="text-xs text-text-secondary leading-relaxed">Impegna a mantenere l'aumento della temperatura globale ben al di sotto di 2°C e a perseguire sforzi per limitarlo a 1,5°C.</p></div>
+            <div class="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-xl p-5 reveal"><div class="text-2xl mb-2">⚖️</div><h3 class="font-semibold text-accent-2 text-sm mb-1">Bilancio emissivo</h3><p class="text-xs text-text-secondary leading-relaxed">Richiede il raggiungimento di un equilibrio tra emissioni antropiche e assorbimenti nella seconda metà del secolo.</p></div>
+        </div>
+        <div class="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-xl p-6 reveal">
+            <p class="text-sm text-text-secondary leading-relaxed">L'accordo si basa su cinque pilastri principali: mitigazione, adattamento, finanza climatica, trasparenza e cooperazione internazionale. La sua forza non sta in un unico obbligo quantitativo identico per tutti gli Stati, ma in un sistema dinamico in cui ciascun Paese presenta contributi determinati a livello nazionale (NDC), li aggiorna periodicamente e deve dimostrare un livello crescente di ambizione.</p>
+            <div class="mini-line reveal"></div>
+            <p class="text-xs text-text-muted mt-4 reveal">Idea chiave: l'Accordo di Parigi non è un piano rigido uguale per tutti, ma un meccanismo progressivo di impegni nazionali e revisione periodica.</p>
+        </div>
+    </div>
+</div>
+
+<div class="slide slide-4" data-slide="4">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:350px;height:350px;top:-70px;right:-50px;background:var(--color-accent-1);opacity:0.09;"></div>
+        <div class="blob" style="width:260px;height:260px;bottom:-60px;left:-50px;background:var(--color-accent-3);opacity:0.06;"></div>
+    </div>
+    <div class="content">
+        <p class="uppercase tracking-[0.12em] text-accent-1 text-sm font-semibold mb-3 reveal">Accordo di Parigi II</p>
+        <h2 class="font-display text-[clamp(1.9rem,3.8vw,2.9rem)] font-bold mb-6 reveal">Perché è decisivo per la neutralità climatica</h2>
+        <div class="grid grid-cols-2 gap-6">
+            <div class="space-y-4">
+                <div class="border-l-4 border-accent-1 bg-glass-bg backdrop-blur-xl rounded-r-xl p-5 reveal">
+                    <h3 class="font-semibold text-accent-2 mb-2 text-sm">NDC e revisione quinquennale</h3>
+                    <p class="text-sm text-text-secondary">Ogni Paese deve presentare nuovi contributi nazionali con una progressione nel tempo. Questo meccanismo lega la neutralità climatica a una traiettoria concreta di riduzione delle emissioni.</p>
+                </div>
+                <div class="border-l-4 border-accent-2 bg-glass-bg backdrop-blur-xl rounded-r-xl p-5 reveal">
+                    <h3 class="font-semibold text-accent-2 mb-2 text-sm">Adattamento e resilienza</h3>
+                    <p class="text-sm text-text-secondary">L'accordo non parla solo di taglio delle emissioni: chiede anche di rafforzare la capacità di adattamento, ridurre la vulnerabilità e rendere lo sviluppo più resiliente ai cambiamenti climatici.</p>
+                </div>
+                <div class="border-l-4 border-accent-3 bg-glass-bg backdrop-blur-xl rounded-r-xl p-5 reveal">
+                    <h3 class="font-semibold text-accent-2 mb-2 text-sm">Finanza climatica</h3>
+                    <p class="text-sm text-text-secondary">I flussi finanziari devono essere coerenti con uno sviluppo a basse emissioni e resiliente; la finanza non è accessoria, ma condizione materiale della transizione.</p>
+                </div>
+            </div>
+            <div class="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-xl p-6 reveal">
+                <h3 class="font-semibold text-accent-2 mb-3">Dalla cornice globale all'azione concreta</h3>
+                <p class="text-sm text-text-secondary leading-relaxed mb-3">L'Accordo di Parigi è decisivo perché collega tre livelli che oggi non possono più essere separati: riduzione delle emissioni, adattamento agli impatti già in corso e riallineamento degli investimenti pubblici e privati verso modelli di sviluppo a basse emissioni.</p>
+                <p class="text-sm text-text-secondary leading-relaxed mb-3">Il suo funzionamento progressivo, basato su NDC aggiornati e sul Global Stocktake, mostra che la transizione climatica non dipende da un solo provvedimento, ma da un processo continuo di verifica, revisione e aumento dell'ambizione politica.</p>
+                <p class="text-sm text-text-muted">In questo senso la neutralità climatica diventa un obiettivo dinamico, costruito nel tempo attraverso politiche, strumenti economici e trasformazioni territoriali.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide slide-5" data-slide="5">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:360px;height:360px;top:-80px;left:-40px;background:var(--color-accent-1);opacity:0.09;"></div>
+        <div class="blob" style="width:260px;height:260px;bottom:-50px;right:-30px;background:var(--color-accent-2);opacity:0.07;"></div>
+    </div>
+    <div class="content">
+        <p class="uppercase tracking-[0.12em] text-accent-1 text-sm font-semibold mb-3 reveal">Quadro europeo</p>
+        <h2 class="font-display text-[clamp(1.9rem,3.8vw,2.9rem)] font-bold mb-6 reveal">Dall'Accordo di Parigi alla strategia dell'UE</h2>
+        <div class="grid grid-cols-3 gap-6">
+            <div class="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-xl p-6 text-center reveal"><div class="font-display text-[2.2rem] font-black text-accent-1 stat-glow">−55%</div><p class="text-sm text-accent-2 font-semibold mt-1">2030</p><p class="text-xs text-text-secondary mt-2">Riduzione netta delle emissioni rispetto al 1990, resa vincolante dalla Climate Law.</p></div>
+            <div class="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-xl p-6 text-center reveal"><div class="font-display text-[2.2rem] font-black text-accent-1 stat-glow">−90%</div><p class="text-sm text-accent-2 font-semibold mt-1">2040</p><p class="text-xs text-text-secondary mt-2">Target intermedio proposto per mantenere la traiettoria verso la neutralità climatica.</p></div>
+            <div class="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-xl p-6 text-center reveal"><div class="font-display text-[2.2rem] font-black text-accent-1 stat-glow">Net zero</div><p class="text-sm text-accent-2 font-semibold mt-1">2050</p><p class="text-xs text-text-secondary mt-2">Obiettivo finale dell'Unione europea, coerente con l'impianto dell'Accordo di Parigi.</p></div>
+        </div>
+        <div class="mt-6 bg-glass-bg backdrop-blur-xl border border-glass-border rounded-xl p-6 reveal">
+            <p class="text-sm text-text-secondary leading-relaxed">Con il Green Deal europeo e il pacchetto Fit for 55, l'UE ha tradotto gli obiettivi internazionali in strumenti legislativi concreti: riforma dell'ETS, nuove regole per rinnovabili ed efficienza, obiettivi per trasporti, edilizia e uso del suolo. In questo modo la neutralità climatica diventa un riferimento strutturale per le politiche territoriali e urbane, non solo un obiettivo diplomatico.</p>
+        </div>
+    </div>
+</div>
+
+<div class="slide slide-6" data-slide="6">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:370px;height:370px;top:-70px;right:-40px;background:var(--color-accent-1);opacity:0.08;"></div>
+        <div class="blob" style="width:240px;height:240px;bottom:-50px;left:-30px;background:var(--color-accent-3);opacity:0.06;"></div>
+    </div>
+    <div class="content">
+        <p class="uppercase tracking-[0.12em] text-accent-1 text-sm font-semibold mb-3 reveal">Ambiti di intervento</p>
+        <h2 class="font-display text-[clamp(1.9rem,3.8vw,2.9rem)] font-bold mb-6 reveal">I settori chiave della transizione</h2>
+        <div class="grid grid-cols-3 gap-5">
+            <div class="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-xl p-5 reveal"><h3 class="font-semibold text-accent-2 text-sm mb-2">Energia</h3><p class="text-xs text-text-secondary leading-relaxed">Espansione di solare ed eolico, elettrificazione dei consumi finali, reti intelligenti e accumulo. L'obiettivo UE per le rinnovabili al 2030 è almeno il 42,5%.</p></div>
+            <div class="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-xl p-5 reveal"><h3 class="font-semibold text-accent-2 text-sm mb-2">Edifici</h3><p class="text-xs text-text-secondary leading-relaxed">Riduzione dei consumi tramite isolamento, pompe di calore, retrofit energetico e progettazione bioclimatica; tema centrale per il patrimonio edilizio esistente.</p></div>
+            <div class="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-xl p-5 reveal"><h3 class="font-semibold text-accent-2 text-sm mb-2">Mobilità</h3><p class="text-xs text-text-secondary leading-relaxed">Trasporto pubblico, ferro, mobilità attiva, elettrificazione e riduzione della domanda di spostamento attraverso città più compatte e miste.</p></div>
+            <div class="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-xl p-5 reveal"><h3 class="font-semibold text-accent-2 text-sm mb-2">Industria</h3><p class="text-xs text-text-secondary leading-relaxed">Efficienza, materiali a basse emissioni, idrogeno verde e cattura del carbonio per i settori hard-to-abate come acciaio, cemento e chimica.</p></div>
+            <div class="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-xl p-5 reveal"><h3 class="font-semibold text-accent-2 text-sm mb-2">Uso del suolo</h3><p class="text-xs text-text-secondary leading-relaxed">Foreste, suoli agricoli e sistemi naturali funzionano come sink di carbonio; la loro tutela è complementare alla riduzione delle emissioni dirette.</p></div>
+            <div class="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-xl p-5 reveal"><h3 class="font-semibold text-accent-2 text-sm mb-2">Governance</h3><p class="text-xs text-text-secondary leading-relaxed">Piani clima-energia, monitoraggio, indicatori, finanza e consenso sociale determinano la capacità reale di implementare la transizione.</p></div>
+        </div>
+    </div>
+</div>
+
+<div class="slide slide-7" data-slide="7">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:400px;height:400px;top:-80px;right:-70px;background:var(--color-accent-1);opacity:0.10;"></div>
+        <div class="blob" style="width:280px;height:280px;bottom:-70px;left:-50px;background:var(--color-accent-3);opacity:0.07;"></div>
+    </div>
+    <canvas class="particle-canvas-ambient" style="position:absolute;inset:0;z-index:1;"></canvas>
+    <div class="content">
+        <p class="uppercase tracking-[0.12em] text-accent-1 text-sm font-semibold mb-3 reveal">Economia della transizione</p>
+        <h2 class="font-display text-[clamp(1.9rem,3.8vw,2.9rem)] font-bold mb-6 reveal">Costi, investimenti e opportunità</h2>
+        <div class="grid grid-cols-2 gap-6">
+            <div class="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-xl p-6 reveal">
+                <p class="text-sm text-text-secondary mb-4">Investimenti aggiuntivi stimati nell'UE per il decennio 2021–2030</p>
+                <div class="space-y-3">
+                    <div><div class="flex justify-between text-xs text-text-muted mb-1"><span>Rinnovabili e reti</span><span>~€170 mld/anno</span></div><div class="bar-track"><div class="bar-fill" data-width="82"></div></div></div>
+                    <div><div class="flex justify-between text-xs text-text-muted mb-1"><span>Trasporti sostenibili</span><span>~€100 mld/anno</span></div><div class="bar-track"><div class="bar-fill" data-width="50"></div></div></div>
+                    <div><div class="flex justify-between text-xs text-text-muted mb-1"><span>Edifici e industria</span><span>~€80 mld/anno</span></div><div class="bar-track"><div class="bar-fill" data-width="38"></div></div></div>
+                </div>
+                <p class="text-xs text-text-muted mt-4">Ordine di grandezza complessivo: circa €350 miliardi annui di investimenti aggiuntivi.</p>
+            </div>
+            <div class="space-y-4">
+                <div class="border-l-4 border-accent-1 bg-glass-bg backdrop-blur-xl rounded-r-xl p-5 reveal"><p class="text-sm text-text-secondary"><strong class="text-text">Opportunità economica:</strong> sviluppo di filiere industriali verdi, innovazione tecnologica, occupazione qualificata e maggiore sicurezza energetica.</p></div>
+                <div class="border-l-4 border-orange-400 bg-glass-bg backdrop-blur-xl rounded-r-xl p-5 reveal"><p class="text-sm text-text-secondary"><strong class="text-text">Questione sociale:</strong> la transizione deve essere giusta, cioè evitare di scaricare costi sproporzionati su famiglie vulnerabili e territori fragili.</p></div>
+                <div class="border-l-4 border-yellow-400 bg-glass-bg backdrop-blur-xl rounded-r-xl p-5 reveal"><p class="text-sm text-text-secondary"><strong class="text-text">Tema progettuale:</strong> gli investimenti climatici non sono solo spesa ambientale, ma anche trasformazione spaziale di infrastrutture, città e paesaggi.</p></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide slide-8" data-slide="8">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:480px;height:480px;top:-100px;left:-60px;background:var(--color-accent-1);opacity:0.13;"></div>
+        <div class="blob" style="width:260px;height:260px;bottom:-70px;right:-40px;background:var(--color-accent-2);opacity:0.10;"></div>
+        <div class="blob" style="width:180px;height:180px;top:36%;right:18%;background:var(--color-accent-3);opacity:0.08;"></div>
+    </div>
+    <canvas class="particle-canvas" style="position:absolute;inset:0;z-index:1;"></canvas>
+    <div class="content text-center">
+        <h2 class="font-display text-[clamp(2.1rem,4.6vw,3.6rem)] font-extrabold bg-linear-to-br from-accent-1 via-accent-2 to-accent-1 bg-clip-text text-transparent mb-4 reveal">Conclusioni</h2>
+        <div class="max-w-[930px] mx-auto bg-glass-bg backdrop-blur-xl border border-glass-border rounded-2xl p-8 reveal">
+            <p class="text-lg text-text-secondary leading-relaxed">La neutralità climatica è il punto di arrivo di una trasformazione sistemica che coinvolge energia, territorio, infrastrutture, edifici, uso del suolo e governance. L'Accordo di Parigi definisce la cornice globale; l'Unione europea la traduce in obiettivi legislativi; la scala urbana e territoriale è il luogo in cui questi principi diventano progetto.</p>
+            <p class="text-sm uppercase tracking-[4px] text-text-muted mt-5">Urbs 2025/26 · Massimo Kushnaryov · Stefano Pisati</p>
+        </div>
+    </div>
+</div>
+
+</div>
+<div class="nav-controls">
+    <button class="nav-btn" onclick="changeSlide(-1)">&#8249;</button>
+    <div class="slide-dots" id="dots"></div>
+    <button class="nav-btn" onclick="changeSlide(1)">&#8250;</button>
+    <span class="slide-counter" id="counter">1 / 8</span>
+</div>
+<script>
+let current = 1;
+const total = document.querySelectorAll('.slide').length;
+const dotsContainer = document.getElementById('dots');
+const counter = document.getElementById('counter');
+for (let i = 1; i <= total; i++) { const dot = document.createElement('div'); dot.className = 'dot' + (i === 1 ? ' active' : ''); dot.onclick = () => goToSlide(i); dotsContainer.appendChild(dot); }
+function goToSlide(n) { const prev = document.querySelector('.slide.active'); const next = document.querySelector(`.slide[data-slide="${n}"]`); if (prev) prev.classList.remove('active'); if (next) { next.classList.add('active'); animateSlide(next); } current = n; updateNav(); }
+function changeSlide(dir) { let next = current + dir; if (next < 1) next = total; if (next > total) next = 1; goToSlide(next); }
+function updateNav() { document.querySelectorAll('.dot').forEach((d, i) => { d.classList.toggle('active', i + 1 === current); }); counter.textContent = current + ' / ' + total; }
+document.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); changeSlide(1); } if (e.key === 'ArrowLeft') { e.preventDefault(); changeSlide(-1); } });
+let touchStartX = 0;
+document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', (e) => { const diff = touchStartX - e.changedTouches[0].clientX; if (Math.abs(diff) > 50) changeSlide(diff > 0 ? 1 : -1); });
+function animateSlide(slide) {
+  slide.querySelectorAll('.reveal').forEach((el, i) => {
+    el.style.transition = 'none'; el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; el.offsetHeight;
+    const delay = i * 0.08;
+    el.style.transition = `opacity 0.35s ease ${delay}s, transform 0.35s ease ${delay}s`;
+    el.style.opacity = '1'; el.style.transform = 'translateY(0px)';
+  });
+  animateSlideEffects(slide);
+}
+function animateSlideEffects(slide) {
+  slide.querySelectorAll('.bar-fill:not(.fill-init)').forEach((bar, i) => {
+    bar.classList.add('fill-init');
+    bar.style.width = '0%'; bar.style.transition = `width 0.7s ease ${i * 0.12}s`; bar.offsetHeight; bar.style.width = bar.dataset.width + '%';
+  });
+}
+document.addEventListener('mousemove', (e) => {
+  const spotlight = document.querySelector('.mouse-spotlight');
+  if (spotlight) spotlight.style.background = `radial-gradient(600px circle at ${e.clientX}px ${e.clientY}px, rgba(34,197,94,0.06), transparent 40%)`;
+});
+window.initParticles = function(canvas, options) {
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d'); canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
+  const interactive = options.interactive !== false; const count = options.count || (interactive ? 55 : 18); let mx=-1000,my=-1000;
+  const particles = Array.from({ length: count }, () => ({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, vx:(Math.random()-0.5)*0.3, vy:(Math.random()-0.5)*0.3, size:Math.random()*2.5+0.8, alpha:Math.random()*0.35+0.1 }));
+  if (interactive) { canvas.addEventListener('mousemove', (e) => { const rect = canvas.getBoundingClientRect(); mx = e.clientX - rect.left; my = e.clientY - rect.top; }); canvas.addEventListener('mouseleave', () => { mx=-1000; my=-1000; }); }
+  (function animate(){ ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p => { if (interactive) { const dx=p.x-mx, dy=p.y-my, dist=Math.sqrt(dx*dx+dy*dy); if (dist < 120 && dist > 0) { const force=(120-dist)/120*2; p.vx += (dx/dist)*force*0.1; p.vy += (dy/dist)*force*0.1; } } p.vx*=0.98; p.vy*=0.98; p.x+=p.vx; p.y+=p.vy; if (p.x<0) p.x=canvas.width; if (p.x>canvas.width) p.x=0; if (p.y<0) p.y=canvas.height; if (p.y>canvas.height) p.y=0; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fillStyle=`rgba(34,197,94,${p.alpha})`; ctx.fill(); }); requestAnimationFrame(animate); })();
+};
+document.querySelectorAll('.particle-canvas').forEach(c => window.initParticles(c, { interactive:true, count:55 }));
+document.querySelectorAll('.particle-canvas-ambient').forEach(c => window.initParticles(c, { interactive:false, count:18 }));
+try { animateSlide(document.querySelector('.slide.active')); } catch(e) {}
+</script>
+</body>
+</html>
